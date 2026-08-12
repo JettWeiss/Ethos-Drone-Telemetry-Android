@@ -1,4 +1,5 @@
 <resources>
+    <string name="drone_telemetry">Drone Telemetry</string>
     <string name="sample_app_name">DJI SDK Sample</string>
     <string name="action_settings">Settings</string>
 

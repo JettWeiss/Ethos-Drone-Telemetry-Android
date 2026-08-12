@@ -126,6 +126,15 @@
         android:textColor="@color/common_text_color"
         android:textSize="15dp"/>
 
+    <Button
+        android:id="@+id/button_demo"
+        android:layout_width="75dp"
+        android:layout_height="55dp"
+        android:layout_toEndOf="@id/btn_open"
+        android:layout_alignTop="@id/btn_open"
+        android:layout_marginStart="25dp"
+        android:text="Demo" />
+
     <TextView
         android:id="@+id/text_version"
         android:layout_width="wrap_content"

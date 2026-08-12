@@ -63,6 +63,8 @@ import dji.sdk.sdkmanager.LDMModule;
 import dji.sdk.sdkmanager.LDMModuleType;
 import dji.sdk.useraccount.UserAccountManager;
 
+import ethos.DroneTelemetry;
+
 /**
  * Created by dji on 15/12/18.
  */
@@ -90,9 +92,13 @@ public class MainContent extends RelativeLayout {
     private Button mBtnRegisterApp;
     private Button getmBtnRegisterAppForLDM;
     private Button mBtnOpen;
+    private Button mButtonDemo;
     private Button mBtnBluetooth;
+    private ViewWrapper DroneTelemetry =
+            new ViewWrapper(new DroneTelemetry(getContext()), R.string.drone_telemetry);
     private ViewWrapper componentList =
             new ViewWrapper(new DemoListView(getContext()), R.string.activity_component_list);
+
     private ViewWrapper bluetoothView;
     private EditText mBridgeModeEditText;
     private CheckBox mCheckboxFirmware;
@@ -169,6 +175,7 @@ public class MainContent extends RelativeLayout {
         mBtnRegisterApp = (Button) findViewById(R.id.btn_registerApp);
         getmBtnRegisterAppForLDM = (Button) findViewById(R.id.btn_registerAppForLDM);
         mBtnOpen = (Button) findViewById(R.id.btn_open);
+        mButtonDemo = (Button) findViewById(R.id.button_demo);
         mBridgeModeEditText = (EditText) findViewById(R.id.edittext_bridge_ip);
         mBtnBluetooth = (Button) findViewById(R.id.btn_bluetooth);
         mCheckboxFirmware = (CheckBox) findViewById(R.id.checkbox_firmware);
@@ -191,6 +198,16 @@ public class MainContent extends RelativeLayout {
             }
         });
         mBtnOpen.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (GeneralUtils.isFastDoubleClick()) {
+                    return;
+                }
+                DJISampleApplication.getEventBus().post(DroneTelemetry);
+                DJISampleApplication.getEventBus().post(new MainActivity.RequestStartFullScreenEvent());
+            }
+        });
+        mButtonDemo.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (GeneralUtils.isFastDoubleClick()) {
@@ -369,7 +386,8 @@ public class MainContent extends RelativeLayout {
         Log.d(TAG, "mProduct: " + (mProduct == null ? "null" : "unnull"));
         if (null != mProduct) {
             if (mProduct.isConnected()) {
-                mBtnOpen.setEnabled(true);
+                mBtnOpen.setEnabled(false);
+                mButtonDemo.setEnabled(true);
                 String str = mProduct instanceof Aircraft ? "DJIAircraft" : "DJIHandHeld";
                 mTextConnectionStatus.setText("Status: " + str + " connected");
                 tryUpdateFirmwareVersionWithListener();
@@ -387,12 +405,14 @@ public class MainContent extends RelativeLayout {
                 if (aircraft.getRemoteController() != null && aircraft.getRemoteController().isConnected()) {
                     mTextConnectionStatus.setText(R.string.connection_only_rc);
                     mTextProduct.setText(R.string.product_information);
-                    mBtnOpen.setEnabled(false);
+                    mBtnOpen.setEnabled(true);
+                    mButtonDemo.setEnabled(false);
                     mTextModelAvailable.setText("Firmware version:N/A");
                 }
             }
         } else {
-            mBtnOpen.setEnabled(false);
+            mBtnOpen.setEnabled(true);
+            mButtonDemo.setEnabled(false);
             mTextProduct.setText(R.string.product_information);
             mTextConnectionStatus.setText(R.string.connection_loose);
             mTextModelAvailable.setText("Firmware version:N/A");
