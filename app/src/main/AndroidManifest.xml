@@ -26,8 +26,10 @@
 
 
     <!-- SDK requirement permission end -->
+    <!-- android:usesCleartextTraffic="true"  workaround code to avoid https connection -->
     <application
         android:name=".internal.controller.DJISampleApplication"
+        android:usesCleartextTraffic="true"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/sample_app_name"

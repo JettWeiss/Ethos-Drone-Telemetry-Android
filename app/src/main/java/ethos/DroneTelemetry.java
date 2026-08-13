@@ -29,19 +29,19 @@ public class DroneTelemetry extends FrameLayout {
     }
 
     //Variables
-    private String serverURL = "ws:10.1.10.117:8765";
+    private String serverURL = "ws://10.1.10.117:8765";
     WebSocketManager websocket;
     private Button messageOne;
     private Button messageTwo;
 
     private void initView(Context context){
+        Log.d("DEBUG", "Top of initView");
         inflate(context, R.layout.drone_telemetry, this);
 
+        Log.d("DEBUG", "About to make new websocketmanager object");
         websocket = new WebSocketManager(serverURL);
-
-        Log.d("Entered initView", "Entered initView");
+        Log.d("DEBUG", "About to connect");
         websocket.connect();
-        websocket.send("Testing");
 
         messageOne = (Button) findViewById(R.id.message_one);
         messageTwo = (Button) findViewById(R.id.message_two);
@@ -53,6 +53,7 @@ public class DroneTelemetry extends FrameLayout {
                 if (GeneralUtils.isFastDoubleClick()) {
                     return;
                 }
+                Log.d("DEBUG", "message one");
                 websocket.send("Message 1");
             }
         });
@@ -62,6 +63,7 @@ public class DroneTelemetry extends FrameLayout {
                 if (GeneralUtils.isFastDoubleClick()) {
                     return;
                 }
+                Log.d("DEBUG", "message two");
                 websocket.send("Message 2");
             }
         });

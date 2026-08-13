@@ -95,7 +95,7 @@ public class MainContent extends RelativeLayout {
     private Button mButtonDemo;
     private Button mBtnBluetooth;
     private ViewWrapper DroneTelemetry =
-            new ViewWrapper(new DroneTelemetry(getContext()), R.string.drone_telemetry);
+            new ViewWrapper(new DroneTelemetry(getContext()), R.string.drone_telemetry); //remove if needed
     private ViewWrapper componentList =
             new ViewWrapper(new DemoListView(getContext()), R.string.activity_component_list);
 
@@ -205,7 +205,6 @@ public class MainContent extends RelativeLayout {
                 }
                 Log.d("DEBUG", "Button Open Clicked");
                 DJISampleApplication.getEventBus().post(DroneTelemetry);
-                //DJISampleApplication.getEventBus().post(new MainActivity.RequestStartFullScreenEvent());
             }
         });
         mButtonDemo.setOnClickListener(new OnClickListener() {

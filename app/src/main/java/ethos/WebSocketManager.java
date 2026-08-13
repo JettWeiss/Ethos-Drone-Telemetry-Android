@@ -1,16 +1,17 @@
 package ethos;
 
+import android.util.Log;
+
 import java.util.concurrent.TimeUnit;
 import okhttp3.*;
 
 public class WebSocketManager {
-    private static final String TAG = "WebSocketManager";
-
     private final String serverUrl;
     private final OkHttpClient client;
     private WebSocket webSocket;
 
     public WebSocketManager(String serverUrl) {
+        Log.d("DEBUG", "Inside WebsocketManager INIT");
         this.serverUrl = serverUrl;
         this.client = new OkHttpClient.Builder()
                 .readTimeout(0, TimeUnit.MILLISECONDS)
@@ -19,25 +20,26 @@ public class WebSocketManager {
     }
 
     public void connect() {
+        Log.d("DEBUG", "Inside WebsocketManager connect");
         Request request = new Request.Builder().url(serverUrl).build();
 
         WebSocketListener listener = new WebSocketListener() {
-
             @Override
             public void onOpen(WebSocket webSocket, Response response) {
-                // Connected
+                Log.d("WebSocket", "CONNECTED");
+                webSocket.send("Just connected");
             }
             @Override
             public void onMessage(WebSocket webSocket, String text) {
-                // Received message
+                Log.d("WebSocket", "MESSAGE: " + text);
             }
             @Override
             public void onFailure(WebSocket webSocket, Throwable t, Response response) {
-                // Connection failed
+                Log.e("WebSocket", "Connection failed", t);
             }
             @Override
             public void onClosed(WebSocket webSocket, int code, String reason) {
-                // Connection closed
+                Log.d("WebSocket", "CLOSED: " + code + " " + reason);
             }
         };
 
@@ -45,7 +47,9 @@ public class WebSocketManager {
     }
 
     public boolean send(String message) {
+        Log.d("DEBUG", "Inside WebsocketManager send");
         if (webSocket == null) return false;
+        Log.d("DEBUG", "Inside WebsocketManager sent");
         return webSocket.send(message);
     }
 
