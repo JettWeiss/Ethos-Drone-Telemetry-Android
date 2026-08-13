@@ -203,8 +203,9 @@ public class MainContent extends RelativeLayout {
                 if (GeneralUtils.isFastDoubleClick()) {
                     return;
                 }
+                Log.d("DEBUG", "Button Open Clicked");
                 DJISampleApplication.getEventBus().post(DroneTelemetry);
-                DJISampleApplication.getEventBus().post(new MainActivity.RequestStartFullScreenEvent());
+                //DJISampleApplication.getEventBus().post(new MainActivity.RequestStartFullScreenEvent());
             }
         });
         mButtonDemo.setOnClickListener(new OnClickListener() {

@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.hardware.usb.UsbManager;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -34,6 +35,7 @@ import java.util.Stack;
 
 import dji.sdk.base.BaseProduct;
 import dji.sdk.sdkmanager.DJISDKManager;
+import ethos.DroneTelemetry;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -285,6 +287,11 @@ public class MainActivity extends AppCompatActivity {
                 refreshTitle();
             }
         });
+    }
+
+    @Subscribe
+    public void DroneTelemetryViewSwap(DroneTelemetry droneTelemetry){
+        setContentView(R.layout.drone_telemetry);
     }
 
     public static class SearchQueryEvent {
