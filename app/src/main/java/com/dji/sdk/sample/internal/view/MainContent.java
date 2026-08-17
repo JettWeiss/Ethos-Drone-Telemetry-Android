@@ -205,6 +205,7 @@ public class MainContent extends RelativeLayout {
                 }
                 Log.d("DEBUG", "Button Open Clicked");
                 DJISampleApplication.getEventBus().post(DroneTelemetry);
+                DJISampleApplication.getEventBus().post(new MainActivity.RequestStartFullScreenEvent());
             }
         });
         mButtonDemo.setOnClickListener(new OnClickListener() {
@@ -386,7 +387,7 @@ public class MainContent extends RelativeLayout {
         Log.d(TAG, "mProduct: " + (mProduct == null ? "null" : "unnull"));
         if (null != mProduct) {
             if (mProduct.isConnected()) {
-                mBtnOpen.setEnabled(false);
+                mBtnOpen.setEnabled(true);
                 mButtonDemo.setEnabled(true);
                 String str = mProduct instanceof Aircraft ? "DJIAircraft" : "DJIHandHeld";
                 mTextConnectionStatus.setText("Status: " + str + " connected");
@@ -405,13 +406,13 @@ public class MainContent extends RelativeLayout {
                 if (aircraft.getRemoteController() != null && aircraft.getRemoteController().isConnected()) {
                     mTextConnectionStatus.setText(R.string.connection_only_rc);
                     mTextProduct.setText(R.string.product_information);
-                    mBtnOpen.setEnabled(true);
+                    mBtnOpen.setEnabled(false);
                     mButtonDemo.setEnabled(false);
                     mTextModelAvailable.setText("Firmware version:N/A");
                 }
             }
         } else {
-            mBtnOpen.setEnabled(true);
+            mBtnOpen.setEnabled(false);
             mButtonDemo.setEnabled(false);
             mTextProduct.setText(R.string.product_information);
             mTextConnectionStatus.setText(R.string.connection_loose);

@@ -9,10 +9,20 @@ import dji.common.battery.BatteryState;
 /**
  * Class for getting the battery information.
  */
+
+import ethos.WebSocketManager;
+
 public class PushBatteryDataView extends BasePushDataView {
+    private String serverURL = "ws://10.1.10.117:8765"; //TODO: Swap from hardcoded
+    WebSocketManager websocket;
+
     public PushBatteryDataView(Context context) {
         super(context);
+        websocket = new WebSocketManager(serverURL);
+        websocket.connect();
     }
+
+
 
     @Override
     protected void onAttachedToWindow() {
@@ -27,12 +37,20 @@ public class PushBatteryDataView extends BasePushDataView {
                     stringBuffer.append("BatteryEnergyRemainingPercent: ").
                         append(djiBatteryState.getChargeRemainingInPercent()).
                                     append("%\n");
+
+
+
                     stringBuffer.append("CurrentVoltage: ").
                         append(djiBatteryState.getVoltage()).append("mV\n");
                     stringBuffer.append("CurrentCurrent: ").
                         append(djiBatteryState.getCurrent()).append("mA\n");
 
                     showStringBufferResult();
+
+                    //Send to websocket
+                    websocket.send(Integer.toString(djiBatteryState.getChargeRemainingInPercent()));
+                    websocket.send(Integer.toString(djiBatteryState.getVoltage()));
+                    websocket.send(Integer.toString(djiBatteryState.getCurrent()));
                 }
             });
         } catch (Exception ignored) {

@@ -8,32 +8,214 @@
     android:orientation="horizontal"
     tools:context="ethos.DroneTelemetry">
 
-    <Button
-        android:id="@+id/message_one"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="154dp"
-        android:text="message_one"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.714"
-        app:layout_constraintStart_toStartOf="parent"
+    <!--Header-->
+    <LinearLayout
+        android:id="@+id/header_bar"
+        android:layout_width="0dp"
+        android:layout_height="25dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.009" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
 
-    <Button
-        android:id="@+id/message_two"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="159dp"
-        android:layout_marginTop="264dp"
-        android:layout_marginEnd="447dp"
-        android:layout_marginBottom="99dp"
-        android:text="message_two"
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="300dp"
+            android:layout_height="match_parent"
+            android:layout_marginStart="60dp"
+            android:hint="Computer IP">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Computer IP" />
+        </com.google.android.material.textfield.TextInputLayout>
+        <ImageButton
+            android:id="@+id/ip_input_button"
+            android:layout_height="match_parent"
+            android:layout_width="25dp"
+            android:src="@drawable/send"/>
+
+        <ImageButton
+            android:id="@+id/livestream_button"
+            android:layout_height="match_parent"
+            android:layout_width="25dp"
+            android:layout_marginStart="150dp"
+            android:src="@drawable/livestream"/>
+
+        <ImageView
+            android:layout_height="match_parent"
+            android:layout_width="25dp"
+            android:layout_marginStart="15dp"
+            android:src="@drawable/battery"/>
+        <TextView
+            android:id="@+id/battery_text"
+            android:layout_height="match_parent"
+            android:layout_width="wrap_content"
+            android:text="100%" />
+
+        <Space
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1" />
+        <ImageButton
+            android:id="@+id/settings_button"
+            android:layout_height="match_parent"
+            android:layout_width="25dp"
+            android:layout_marginEnd="17.5dp"
+            android:src="@drawable/settings"/>
+
+    </LinearLayout>
+
+    <!--Bottom Bar | Flight Info-->
+    <LinearLayout
+        android:id="@+id/flight_info_bar"
+        android:layout_width="0dp"
+        android:layout_height="60dp"
+        android:gravity="center"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/camera_bar"
+        app:layout_constraintStart_toEndOf="@id/GPS_map_bar">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Altitude" />
+
+            <TextView
+                android:id="@+id/altitude_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="0 m" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginStart="10dp">
+
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Horizontal Speed" />
+
+            <TextView
+                android:id="@+id/horizontal_speed_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="0 m" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginStart="10dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Vertical Speed" />
+
+            <TextView
+                android:id="@+id/vertical_speed_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="0 m" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginStart="10dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Long Lat" />
+
+            <TextView
+                android:id="@+id/long_lat_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="0 m" />
+        </LinearLayout>
+    </LinearLayout>
+
+
+    <!--Right Bar | Camera-->
+    <LinearLayout
+        android:id="@+id/camera_bar"
+        android:layout_width="60dp"
+        android:layout_height="0dp"
+        android:gravity="center_vertical|end"
+        android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/header_bar">
+
+        <ImageButton
+            android:id="@+id/video_swap_button"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_marginStart="10dp"
+            android:layout_marginEnd="10dp"
+            android:src="@drawable/swap_to_video" />
+
+        <ImageButton
+            android:id="@+id/shoot_photo_button"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="10dp"
+            android:src="@drawable/shoot_photo" />
+
+        <ImageButton
+            android:id="@+id/camera_settings_button"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="10dp"
+            android:src="@drawable/camera_settings" />
+    </LinearLayout>
+
+    <!--Left Bar | Mapping-->
+    <LinearLayout
+        android:id="@+id/mapping_bar"
+        android:layout_width="60dp"
+        android:layout_height="0dp"
+        android:gravity="center_vertical|right"
+        android:orientation="horizontal"
+        app:layout_constraintTop_toBottomOf="@id/header_bar"
+        app:layout_constraintBottom_toTopOf="@id/flight_info_bar"
+        app:layout_constraintStart_toStartOf="parent">
+
+
+    </LinearLayout>
+
+    <!--Bottom Left Bar | GPSMap-->
+    <LinearLayout
+        android:id="@+id/GPS_map_bar"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:gravity="center_vertical|right"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/mapping_bar">
 
 
+    </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

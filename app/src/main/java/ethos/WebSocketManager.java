@@ -11,7 +11,6 @@ public class WebSocketManager {
     private WebSocket webSocket;
 
     public WebSocketManager(String serverUrl) {
-        Log.d("DEBUG", "Inside WebsocketManager INIT");
         this.serverUrl = serverUrl;
         this.client = new OkHttpClient.Builder()
                 .readTimeout(0, TimeUnit.MILLISECONDS)
@@ -20,14 +19,12 @@ public class WebSocketManager {
     }
 
     public void connect() {
-        Log.d("DEBUG", "Inside WebsocketManager connect");
         Request request = new Request.Builder().url(serverUrl).build();
 
         WebSocketListener listener = new WebSocketListener() {
             @Override
             public void onOpen(WebSocket webSocket, Response response) {
                 Log.d("WebSocket", "CONNECTED");
-                webSocket.send("Just connected");
             }
             @Override
             public void onMessage(WebSocket webSocket, String text) {
