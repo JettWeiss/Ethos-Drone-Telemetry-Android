@@ -4,6 +4,7 @@ import android.util.Log;
 
 import java.util.concurrent.TimeUnit;
 import okhttp3.*;
+import okio.ByteString;
 
 public class WebSocketManager {
     private final String serverUrl;
@@ -44,10 +45,14 @@ public class WebSocketManager {
     }
 
     public boolean send(String message) {
-        Log.d("DEBUG", "Inside WebsocketManager send");
         if (webSocket == null) return false;
-        Log.d("DEBUG", "Inside WebsocketManager sent");
         return webSocket.send(message);
+    }
+
+    public boolean send(byte[] message){
+        if (webSocket == null) return false;
+        Log.d("CAMERA", "sent websocket");
+        return webSocket.send(ByteString.of(message));
     }
 
     public void disconnect() {

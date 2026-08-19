@@ -21,12 +21,14 @@
 
 
         <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/ip_TextInputLayout"
             android:layout_width="300dp"
             android:layout_height="match_parent"
             android:layout_marginStart="60dp"
             android:hint="Computer IP">
 
             <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/ip_textInputEditText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="Computer IP" />
@@ -72,7 +74,7 @@
     <LinearLayout
         android:id="@+id/flight_info_bar"
         android:layout_width="0dp"
-        android:layout_height="60dp"
+        android:layout_height="50dp"
         android:gravity="center"
         android:orientation="horizontal"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -205,6 +207,20 @@
 
     </LinearLayout>
 
+
+    <!--Middle Camera-->
+    <TextureView
+        android:id="@+id/camera_view"
+        app:layout_constraintTop_toBottomOf="@id/header_bar"
+        app:layout_constraintBottom_toTopOf="@id/flight_info_bar"
+        app:layout_constraintLeft_toRightOf="@id/mapping_bar"
+        app:layout_constraintRight_toLeftOf="@id/camera_bar"
+        android:layout_height="0dp"
+        android:layout_width="0dp"
+        app:layout_constraintDimensionRatio="16:9" >
+
+    </TextureView>
+
     <!--Bottom Left Bar | GPSMap-->
     <LinearLayout
         android:id="@+id/GPS_map_bar"
@@ -218,4 +234,6 @@
 
 
     </LinearLayout>
+
+
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -3,11 +3,13 @@ package ethos;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.view.TextureView;
 import android.view.View;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.TextView;
+import android.graphics.SurfaceTexture;
 
 import androidx.annotation.NonNull;
 
@@ -16,14 +18,27 @@ import com.dji.sdk.sample.internal.controller.DJISampleApplication;
 import com.dji.sdk.sample.internal.utils.GeneralUtils;
 import com.dji.sdk.sample.internal.utils.ModuleVerificationUtil;
 import com.dji.sdk.sample.internal.utils.ToastUtils;
+import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.textfield.TextInputLayout;
+
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.util.List;
 
 import dji.common.battery.BatteryState;
+import dji.common.camera.SettingsDefinitions;
 import dji.common.error.DJIError;
 import dji.common.flightcontroller.FlightControllerState;
 import dji.common.flightcontroller.LocationCoordinate3D;
 import dji.common.util.CommonCallbacks;
 import dji.sdk.camera.Camera;
+import dji.sdk.camera.VideoFeeder;
+import dji.sdk.codec.DJICodecManager;
 import dji.sdk.flightcontroller.FlightController;
+import dji.sdk.media.DownloadListener;
+import dji.sdk.media.MediaFile;
+import dji.sdk.media.MediaManager;
 import dji.sdk.products.Aircraft;
 import ethos.WebSocketManager;
 
@@ -56,10 +71,19 @@ public class DroneTelemetry extends FrameLayout {
     private TextView horizontalSpeedText;
     private TextView verticalSpeedText;
     private TextView longLatText;
+    TextInputLayout ipInputLayout;
+    TextInputEditText ipInput;
 
     //Drone Variables
-    private Camera camera;
     private FlightController flightController;
+    //Camera Variables
+    private Camera camera;
+    private TextureView cameraStream;
+    private VideoFeeder.VideoDataListener videoDataListener;
+    private DJICodecManager codecManager;
+    private MediaManager mediaManager;
+    private ByteArrayOutputStream photoBytes;
+
 
     //Location Variables
     private LocationCoordinate3D location;
@@ -86,6 +110,10 @@ public class DroneTelemetry extends FrameLayout {
         horizontalSpeedText = (TextView) findViewById(R.id.horizontal_speed_text);
         verticalSpeedText = (TextView) findViewById(R.id.vertical_speed_text);
         longLatText = (TextView) findViewById(R.id.long_lat_text);
+        cameraStream = (TextureView) findViewById(R.id.camera_view);
+        ipInputLayout = findViewById(R.id.ip_TextInputLayout);
+        ipInput = findViewById(R.id.ip_textInputEditText);
+
 
 
 
@@ -98,6 +126,9 @@ public class DroneTelemetry extends FrameLayout {
                     return;
                 }
                 websocket.send("IPInputButton");
+                serverURL = "ws://10.1.10.117:8765";//ipInput.getText().toString();
+                websocket = new WebSocketManager(serverURL);
+                websocket.connect();
             }
         });
         livestreamButton.setOnClickListener(new OnClickListener() {
@@ -127,15 +158,38 @@ public class DroneTelemetry extends FrameLayout {
                 websocket.send("videoSwapButton");
             }
         });
+
         shootPhotoButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (GeneralUtils.isFastDoubleClick()) {
                     return;
                 }
-                websocket.send("shootPhotoButton");
+
+                DJISampleApplication.getProductInstance().getCamera().startShootPhoto(new CommonCallbacks.CompletionCallback(){
+                    @Override
+                    public void onResult(DJIError djiError) {
+                        if (djiError != null) {
+                            Log.e("CAMERA", "Take Photo Error: " + djiError.getDescription());
+                            return;
+                        }
+                    }
+                });
+
+                mediaManager.refreshFileListOfStorageLocation(SettingsDefinitions.StorageLocation.SDCARD, new CommonCallbacks.CompletionCallback() {
+                    @Override
+                    public void onResult(DJIError djiError) {
+                        if (djiError != null){
+                            Log.e("CAMERA", "SD Card Access Failed: " + djiError.getDescription());
+                            return;
+                        }
+
+                        sendPhoto();
+                    }
+                });
             }
         });
+
         cameraSettingsButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -148,6 +202,51 @@ public class DroneTelemetry extends FrameLayout {
     }
 
 
+    private void sendPhoto(){
+        List<MediaFile> files = mediaManager.getSDCardFileListSnapshot();
+        if (files == null || files.isEmpty()) {
+            Log.e("CAMERA", "No files found");
+            return;
+        }
+
+        MediaFile photo = files.get(files.size()-1);
+        photo.fetchFileByteData(0, new DownloadListener<String>() {
+            @Override
+            public void onStart() {
+                photoBytes = new ByteArrayOutputStream();
+            }
+
+            @Override
+            public void onRateUpdate(long l, long l1, long l2) {
+
+            }
+
+            @Override
+            public void onRealtimeDataUpdate(byte[] bytes, long l, boolean b) {
+                try{
+                    photoBytes.write(bytes);
+                } catch (IOException e){
+                    Log.e("CAMERA", "Failed to add bytes");
+                }
+            }
+
+            @Override
+            public void onProgress(long l, long l1) {
+                    Log.d("CAMERA", "Progress = " + l1 + "/" + l);
+            }
+
+            @Override
+            public void onSuccess(String s) {
+                byte[] completePhoto = photoBytes.toByteArray();
+                websocket.send(completePhoto);
+            }
+
+            @Override
+            public void onFailure(DJIError djiError) {
+                Log.e("CAMERA", "Failed to fetch photo: " + djiError.getDescription());
+            }
+        });
+    }
 
 
 
@@ -160,6 +259,7 @@ public class DroneTelemetry extends FrameLayout {
         //Inits
         if (ModuleVerificationUtil.isCameraModuleAvailable()){
             camera = DJISampleApplication.getAircraftInstance().getCamera();
+            mediaManager = camera.getMediaManager();
         }
 
         flightController = ((Aircraft) DJISampleApplication.getProductInstance()).getFlightController();
@@ -192,6 +292,7 @@ public class DroneTelemetry extends FrameLayout {
                     velocityY = flightControllerState.getVelocityY();
                     velocityZ = flightControllerState.getVelocityZ();
 
+
                     altitudeText.post(() -> {
                         altitudeText.setText(
                                 altitude + " m"
@@ -218,5 +319,55 @@ public class DroneTelemetry extends FrameLayout {
             });
         } catch (Exception ignored){
         }
+
+
+
+        //Screen View
+        videoDataListener = new VideoFeeder.VideoDataListener() {
+            @Override
+            public void onReceive(byte[] bytes, int size) {
+                if (codecManager != null) {
+                    codecManager.sendDataToDecoder(bytes, size);
+                }
+            }
+        };
+
+        cameraStream.setSurfaceTextureListener(
+                new TextureView.SurfaceTextureListener() {
+                    @Override
+                    public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height) {
+                        codecManager = new DJICodecManager(getContext(), surface, width, height);
+                        VideoFeeder.getInstance().getPrimaryVideoFeed().addVideoDataListener(videoDataListener);
+                        Log.d("CAMERA", "TextureView: " + width + " x " + height);
+                    }
+
+                    @Override
+                    public void onSurfaceTextureSizeChanged(SurfaceTexture surface, int width, int height){}
+
+                    @Override
+                    public boolean onSurfaceTextureDestroyed(SurfaceTexture surface){
+                        return false;
+                    }
+
+                    @Override
+                    public void onSurfaceTextureUpdated(SurfaceTexture surface){}
+                }
+        );
+    }
+
+    @Override
+    protected void onDetachedFromWindow() {
+        super.onDetachedFromWindow();
+
+        if (videoDataListener != null){
+            VideoFeeder.getInstance().getPrimaryVideoFeed().removeVideoDataListener(videoDataListener);
+            videoDataListener = null;
+        }
+
+        if (codecManager != null){
+            codecManager.cleanSurface();
+            codecManager = null;
+        }
+
     }
 }
